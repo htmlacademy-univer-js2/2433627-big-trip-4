@@ -6,6 +6,8 @@ import PointView from '../view/point-view.js';
 
 import {render} from '../render.js';
 
+const POINT_COUNT = 3;
+
 export default class TripEventsPresenter {
   listComponent = new ListView();
 
@@ -19,7 +21,7 @@ export default class TripEventsPresenter {
     render(new EditablePointView, this.listComponent.getElement());
     render(new NewPointView(), this.listComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < POINT_COUNT; i++) {
       render(new PointView(), this.listComponent.getElement());
     }
   }
