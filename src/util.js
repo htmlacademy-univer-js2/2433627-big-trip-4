@@ -1,7 +1,5 @@
 import dayjs from 'dayjs';
 
-//const DATE_FORMAT = 'MMM D';
-
 function formatEventDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
 }

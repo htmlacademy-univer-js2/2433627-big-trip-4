@@ -1,8 +1,6 @@
 import { MAX_PRICE, MIN_PRICE } from '../const.js';
 import { getRandomInteger } from '../util.js';
 
-// const createOfferId = createId();
-
 const offers = [
   {
     type: 'taxi',
@@ -34,16 +32,3 @@ const offers = [
 ];
 
 export {offers};
-
-// function createDestinations() {
-//   return {
-//     type: getRandomArrayElement(POINT_TYPE),
-//     offers: [
-//       {
-//         id: createOfferId(),
-//         title: 'Upgrade',
-//         price: getRandomInteger(MIN_PRICE, MAX_PRICE)
-//       }]
-//   };
-// }
-
