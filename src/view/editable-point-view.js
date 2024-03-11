@@ -1,6 +1,6 @@
-import { createElement } from '../render.js';
 import { POINT_TYPE } from '../const.js';
 import { formatEventDate, isElementHas } from '../util.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 
@@ -85,6 +85,7 @@ function createDestinationPhotosList(pictures){
   const photosList = pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`);
   return photosList.join('');
 }
+
 function createEventTypeList(type){
   const eventTypeList = POINT_TYPE.map((pointType) => `<div class="event__type-item">
     <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
@@ -109,26 +110,19 @@ function createOffersList(offer){
   return offerList.join('');
 }
 
-export default class EditablePointView {
+export default class EditablePointView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offer = null;
+
   constructor (point, destination, offer){
-    this.point = point;
-    this.destination = destination;
-    this.offer = offer;
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offer = offer;
   }
 
-  getTemplate() {
-    return createEditablePointTemplate(this.point, this.destination, this.offer);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditablePointTemplate(this.#point, this.#destination, this.#offer);
   }
 }
