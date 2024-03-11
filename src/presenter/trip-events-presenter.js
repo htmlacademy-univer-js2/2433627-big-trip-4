@@ -1,6 +1,5 @@
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
-//import NewPointView from '../view/new-point-view.js';
 import EditablePointView from '../view/editable-point-view.js';
 import PointView from '../view/point-view.js';
 
@@ -27,7 +26,6 @@ export default class TripEventsPresenter {
     render(new EditablePointView(this.points[0],
       this.destinationsModel.getDestinationById(this.points[0].destination),
       of), this.listComponent.getElement());
-    //render(new NewPointView(), this.listComponent.getElement());
 
     for (let i = 0; i < this.points.length; i++) {
       const point = this.points[i];
