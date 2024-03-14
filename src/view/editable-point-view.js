@@ -114,15 +114,45 @@ export default class EditablePointView extends AbstractView {
   #point = null;
   #destination = null;
   #offer = null;
+  #onSubmitForm = null;
+  #onDeleteButtonClick = null;
+  #onRollupButtonClick = null;
 
-  constructor (point, destination, offer){
+  constructor ({point, destination, offer, onDeleteButtonClick, onSubmitForm, onRollupButtonClick}){
     super();
     this.#point = point;
     this.#destination = destination;
     this.#offer = offer;
+    this.#onDeleteButtonClick = onDeleteButtonClick;
+    this.#onSubmitForm = onSubmitForm;
+    this.#onRollupButtonClick = onRollupButtonClick;
+
+    this.element.querySelector('.event--edit')
+      .addEventListener('submit', this.#submitFormHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#deleteButtonClickHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
   }
 
   get template() {
     return createEditablePointTemplate(this.#point, this.#destination, this.#offer);
   }
+
+  #deleteButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteButtonClick();
+  };
+
+  #submitFormHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSubmitForm();
+  };
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onRollupButtonClick();
+  };
 }

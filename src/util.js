@@ -23,4 +23,6 @@ const isElementHas = (element) => element.length > 0;
 
 const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
-export {createId, getRandomInteger, getRandomArrayElement, formatEventDate, isElementHas};
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export {createId, getRandomInteger, getRandomArrayElement, formatEventDate, isElementHas, isEscapeKey};

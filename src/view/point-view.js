@@ -55,15 +55,25 @@ export default class PointView extends AbstractView{
   #point = null;
   #city = null;
   #offer = null;
+  #onRollupButtonClick = null;
 
-  constructor({point, city, offer}){
+  constructor({point, city, offer, onRollupButtonClick}){
     super();
     this.#point = point;
     this.#city = city;
     this.#offer = offer;
+    this.#onRollupButtonClick = onRollupButtonClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
   }
 
   get template() {
     return createPointTemplate(this.#point, this.#city, this.#offer);
   }
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onRollupButtonClick();
+  };
 }
