@@ -1,6 +1,6 @@
-import { createElement } from '../render.js';
 import { POINT_TYPE } from '../const.js';
 import { formatEventDate, isElementHas } from '../util.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 
@@ -85,6 +85,7 @@ function createDestinationPhotosList(pictures){
   const photosList = pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`);
   return photosList.join('');
 }
+
 function createEventTypeList(type){
   const eventTypeList = POINT_TYPE.map((pointType) => `<div class="event__type-item">
     <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
@@ -109,26 +110,49 @@ function createOffersList(offer){
   return offerList.join('');
 }
 
-export default class EditablePointView {
-  constructor (point, destination, offer){
-    this.point = point;
-    this.destination = destination;
-    this.offer = offer;
+export default class EditablePointView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offer = null;
+  #onSubmitForm = null;
+  #onDeleteButtonClick = null;
+  #onRollupButtonClick = null;
+
+  constructor ({point, destination, offer, onDeleteButtonClick, onSubmitForm, onRollupButtonClick}){
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offer = offer;
+    this.#onDeleteButtonClick = onDeleteButtonClick;
+    this.#onSubmitForm = onSubmitForm;
+    this.#onRollupButtonClick = onRollupButtonClick;
+
+    this.element.querySelector('.event--edit')
+      .addEventListener('submit', this.#submitFormHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#deleteButtonClickHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
   }
 
-  getTemplate() {
-    return createEditablePointTemplate(this.point, this.destination, this.offer);
+  get template() {
+    return createEditablePointTemplate(this.#point, this.#destination, this.#offer);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #deleteButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteButtonClick();
+  };
 
-    return this.element;
-  }
+  #submitFormHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSubmitForm();
+  };
 
-  removeElement() {
-    this.element = null;
-  }
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onRollupButtonClick();
+  };
 }
