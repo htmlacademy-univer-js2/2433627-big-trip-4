@@ -1,9 +1,8 @@
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
-import EditablePointView from '../view/editable-point-view.js';
-import PointView from '../view/point-view.js';
-import { render, replace } from '../framework/render.js';
-import { isEscapeKey } from '../util.js';
+import TripPointPresenter from './trip-point-presenter.js';
+import { render} from '../framework/render.js';
+
 
 export default class TripEventsPresenter {
   #listComponent = new ListView();
@@ -25,8 +24,8 @@ export default class TripEventsPresenter {
   init() {
     this.#points = [...this.#pointsModel.points];
 
-    render(new SortView(), this.#tpipEventsContainer);
-    render(this.#listComponent, this.#tpipEventsContainer);
+    this.#renderSort();
+    this.#renderList();
     for (let i = 0; i < this.#points.length; i++) {
       const point = this.#points[i];
       const destination = this.#destinationsModel.getDestinationById(point.destination);
@@ -35,58 +34,16 @@ export default class TripEventsPresenter {
     }
   }
 
+  #renderSort = () => {
+    render(new SortView(), this.#tpipEventsContainer);
+  };
+
+  #renderList = () => {
+    render(this.#listComponent, this.#tpipEventsContainer);
+  };
+
   #renderPoint = (point, destination, offer) => {
-    const pointComponent = new PointView({
-      point,
-      city: destination.name,
-      offer,
-      onRollupButtonClick: pointRollupButtonClikHandler
-    });
-
-    const editPointComponent = new EditablePointView({
-      point,
-      destination,
-      offer,
-      onDeleteButtonClick: deleteButtonClikHandler,
-      onSubmitForm: submitFormHandler,
-      onRollupButtonClick: formRollupButtonClikHandler
-    });
-
-    function replacePointToForm() {
-      replace(editPointComponent, pointComponent);
-    }
-
-    function replaceFormToPoint() {
-      replace(pointComponent, editPointComponent);
-    }
-
-    function onFormKeydown(evt) {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceFormToPoint();
-      }
-    }
-
-    function pointRollupButtonClikHandler() {
-      replacePointToForm();
-      document.addEventListener('keydown', onFormKeydown);
-    }
-
-    function formRollupButtonClikHandler() {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onFormKeydown);
-    }
-
-    function submitFormHandler() {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onFormKeydown);
-    }
-
-    function deleteButtonClikHandler() {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onFormKeydown);
-    }
-
-    render(pointComponent, this.#listComponent.element);
+    const pointPresenter = new TripPointPresenter(this.#listComponent.element);
+    pointPresenter.init(point, destination, offer);
   };
 }
