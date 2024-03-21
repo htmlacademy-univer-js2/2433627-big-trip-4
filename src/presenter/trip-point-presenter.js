@@ -5,20 +5,29 @@ import { isEscapeKey } from '../util.js';
 
 export default class TripPointPresenter {
   #pointContainer = null;
+  #onFavoriteChange = null;
 
   #pointComponent = null;
   #editPointComponent = null;
 
-  constructor(pointContainer) {
+  #point = null;
+
+  constructor(pointContainer, onFavoriteChange) {
     this.#pointContainer = pointContainer;
+    this.#onFavoriteChange = onFavoriteChange;
   }
 
   init(point, destination, offer) {
+    this.#point = point;
+
+    const prevPointComponent = this.#pointComponent;
+
     this.#pointComponent = new PointView({
       point,
       city: destination.name,
       offer,
-      onRollupButtonClick: this.#pointRollupButtonClikHandler
+      onRollupButtonClick: this.#pointRollupButtonClikHandler,
+      onFavoriteButtonClick: this.#favoriteButtonClickHandler
     });
 
     this.#editPointComponent = new EditablePointView({
@@ -30,8 +39,17 @@ export default class TripPointPresenter {
       onRollupButtonClick: this.#formRollupButtonClikHandler
     });
 
-    render(this.#pointComponent, this.#pointContainer);
+    if (prevPointComponent !== null && this.#pointContainer.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+    else {
+      render(this.#pointComponent, this.#pointContainer);
+    }
   }
+
+  #favoriteButtonClickHandler = () => {
+    this.#onFavoriteChange({...this.#point, isFavorite: !this.#point.isFavorite});
+  };
 
   #replacePointToForm() {
     replace(this.#editPointComponent, this.#pointComponent);

@@ -1,7 +1,5 @@
-import { createId, getRandomInteger, getRandomArrayElement } from '../util.js';
+import { createId, getRandomInteger } from '../util.js';
 import { MAX_PRICE, MIN_PRICE } from '../const.js';
-
-const isFavoriteValues = [true, false];
 
 const getPointId = createId();
 
@@ -12,7 +10,7 @@ const points = [
     dateFrom: '2019-07-10T11:55:56',
     dateTo: '2019-07-11T12:22:13',
     destination: 'dest1',
-    isFavorite: getRandomArrayElement(isFavoriteValues),
+    isFavorite: false,
     offers: [
       'of1'
     ],
@@ -24,7 +22,7 @@ const points = [
     dateFrom: '2019-07-10T22:55:56',
     dateTo: '2019-07-11T11:22:13',
     destination: 'dest2',
-    isFavorite: getRandomArrayElement(isFavoriteValues),
+    isFavorite: false,
     offers: [],
     type: 'bus'
   },
@@ -34,7 +32,7 @@ const points = [
     dateFrom: '2019-07-10T22:55:56',
     dateTo: '2019-07-11T11:22:13',
     destination: 'dest3',
-    isFavorite: getRandomArrayElement(isFavoriteValues),
+    isFavorite: false,
     offers: [
       'of2',
       'of3'

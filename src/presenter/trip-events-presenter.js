@@ -12,6 +12,8 @@ export default class TripEventsPresenter {
   #offersModel = null;
   #destinationsModel = null;
 
+  #pointPresenters = new Map();
+
   #points = [];
 
   constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel}) {
@@ -34,6 +36,14 @@ export default class TripEventsPresenter {
     }
   }
 
+  #changePointFavorite = (point) => {
+    this.#points = this.#points.map((element) => element.id === point.id ? point : element);
+
+    const destination = this.#destinationsModel.getDestinationById(point.destination);
+    const offer = this.#offersModel.getOfferByType(point.type);
+    this.#pointPresenters.get(point.id).init(point, destination, offer);
+  };
+
   #renderSort = () => {
     render(new SortView(), this.#tpipEventsContainer);
   };
@@ -43,7 +53,8 @@ export default class TripEventsPresenter {
   };
 
   #renderPoint = (point, destination, offer) => {
-    const pointPresenter = new TripPointPresenter(this.#listComponent.element);
+    const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite);
     pointPresenter.init(point, destination, offer);
+    this.#pointPresenters.set(point.id, pointPresenter);
   };
 }
