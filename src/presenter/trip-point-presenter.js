@@ -3,18 +3,28 @@ import PointView from '../view/point-view.js';
 import { render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../util.js';
 
+
+const VIEW = {
+  DEFAULT: 'DEFAULT',
+  EDIT: 'EDIT'
+};
+
 export default class TripPointPresenter {
   #pointContainer = null;
   #onFavoriteChange = null;
+  #onViewChange = null;
 
   #pointComponent = null;
   #editPointComponent = null;
 
   #point = null;
 
-  constructor(pointContainer, onFavoriteChange) {
+  #view = VIEW.DEFAULT;
+
+  constructor(pointContainer, onFavoriteChange, onViewChange) {
     this.#pointContainer = pointContainer;
     this.#onFavoriteChange = onFavoriteChange;
+    this.#onViewChange = onViewChange;
   }
 
   init(point, destination, offer) {
@@ -52,12 +62,21 @@ export default class TripPointPresenter {
   };
 
   #replacePointToForm() {
+    this.#onViewChange();
     replace(this.#editPointComponent, this.#pointComponent);
+    this.#view = VIEW.EDIT;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#editPointComponent);
+    this.#view = VIEW.DEFAULT;
   }
+
+  resetView = () => {
+    if (this.#view === VIEW.EDIT){
+      this.#replaceFormToPoint();
+    }
+  };
 
   #pointRollupButtonClikHandler = () => {
     this.#replacePointToForm();

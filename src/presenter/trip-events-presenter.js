@@ -44,6 +44,10 @@ export default class TripEventsPresenter {
     this.#pointPresenters.get(point.id).init(point, destination, offer);
   };
 
+  #changeViewHandler = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #renderSort = () => {
     render(new SortView(), this.#tpipEventsContainer);
   };
@@ -53,7 +57,7 @@ export default class TripEventsPresenter {
   };
 
   #renderPoint = (point, destination, offer) => {
-    const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite);
+    const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite, this.#changeViewHandler);
     pointPresenter.init(point, destination, offer);
     this.#pointPresenters.set(point.id, pointPresenter);
   };
