@@ -5,7 +5,15 @@ function createSortTemplate() {
   return(
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <div class="trip-sort__item  trip-sort__item--day">
-        <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
+        <input
+        id="sort-day"
+        class="trip-sort__input  visually-hidden"
+        type="radio"
+        name="trip-sort"
+        value="sort-day"
+        data-name='day'
+        checked
+        >
         <label class="trip-sort__btn" for="sort-day">Day</label>
       </div>
 
@@ -16,6 +24,7 @@ function createSortTemplate() {
         type="radio"
         name="trip-sort"
         value="sort-event"
+        data-name='event'
         disabled
         >
         <label class="trip-sort__btn" for="sort-event">Event</label>
@@ -28,6 +37,7 @@ function createSortTemplate() {
         type="radio"
         name="trip-sort"
         value="sort-time"
+        data-name='time'
         >
         <label class="trip-sort__btn" for="sort-time">Time</label>
       </div>
@@ -38,7 +48,7 @@ function createSortTemplate() {
         class="trip-sort__input  visually-hidden"
         type="radio" name="trip-sort"
         value="sort-price"
-        checked
+        data-name='price'
         >
         <label class="trip-sort__btn" for="sort-price">Price</label>
       </div>
@@ -49,6 +59,7 @@ function createSortTemplate() {
         class="trip-sort__input  visually-hidden"
         type="radio" name="trip-sort"
         value="sort-offer"
+        data-name='offer'
         disabled
         >
         <label class="trip-sort__btn" for="sort-offer">Offers</label>
@@ -58,7 +69,22 @@ function createSortTemplate() {
 }
 
 export default class SortView extends AbstractView {
+  #onSortClick = null;
+
+  constructor (onSortClick) {
+    super();
+    this.#onSortClick = onSortClick;
+
+    this.element.querySelectorAll('.trip-sort__input')
+      .forEach((item) => item.addEventListener('change', this.#changeSortType));
+  }
+
   get template() {
     return createSortTemplate();
   }
+
+  #changeSortType = (evt) => {
+    evt.preventDefault();
+    this.#onSortClick(evt.target.dataset.name);
+  };
 }

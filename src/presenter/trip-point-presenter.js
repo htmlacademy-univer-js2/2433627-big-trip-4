@@ -1,6 +1,6 @@
 import EditablePointView from '../view/editable-point-view.js';
 import PointView from '../view/point-view.js';
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../util.js';
 
 
@@ -76,6 +76,11 @@ export default class TripPointPresenter {
     if (this.#view === VIEW.EDIT){
       this.#replaceFormToPoint();
     }
+  };
+
+  remove = () => {
+    remove(this.#pointComponent);
+    remove(this.#editPointComponent);
   };
 
   #pointRollupButtonClikHandler = () => {

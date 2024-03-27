@@ -28,12 +28,7 @@ export default class TripEventsPresenter {
 
     this.#renderSort();
     this.#renderList();
-    for (let i = 0; i < this.#points.length; i++) {
-      const point = this.#points[i];
-      const destination = this.#destinationsModel.getDestinationById(point.destination);
-      const offer = this.#offersModel.getOfferByType(point.type);
-      this.#renderPoint(point, destination, offer);
-    }
+    this.#renderPoints(this.#points);
   }
 
   #changePointFavorite = (point) => {
@@ -44,21 +39,48 @@ export default class TripEventsPresenter {
     this.#pointPresenters.get(point.id).init(point, destination, offer);
   };
 
+  #changeSortType = (type) => {
+    this.#clearPoints();
+    switch (type) {
+      case 'day':
+        this.#points.sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
+        this.#renderPoints(this.#points);
+        break;
+      case 'time':
+        // code block
+        break;
+      case 'price':
+        this.#points.sort((a, b) => a.basePrice - b.basePrice);
+        this.#renderPoints(this.#points);
+        break;
+    }
+  };
+
   #changeViewHandler = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #renderSort = () => {
-    render(new SortView(), this.#tpipEventsContainer);
+    render(new SortView(this.#changeSortType), this.#tpipEventsContainer);
   };
 
   #renderList = () => {
     render(this.#listComponent, this.#tpipEventsContainer);
   };
 
-  #renderPoint = (point, destination, offer) => {
-    const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite, this.#changeViewHandler);
-    pointPresenter.init(point, destination, offer);
-    this.#pointPresenters.set(point.id, pointPresenter);
+  #renderPoints = (points) => {
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
+      const destination = this.#destinationsModel.getDestinationById(point.destination);
+      const offer = this.#offersModel.getOfferByType(point.type);
+      const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite, this.#changeViewHandler);
+      pointPresenter.init(point, destination, offer);
+      this.#pointPresenters.set(point.id, pointPresenter);
+    }
+  };
+
+  #clearPoints = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.remove());
+    this.#pointPresenters.clear();
   };
 }
