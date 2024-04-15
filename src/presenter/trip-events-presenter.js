@@ -3,8 +3,9 @@ import ListView from '../view/list-view.js';
 import FilterView from '../view/filter-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
-import { render} from '../framework/render.js';
-import { LIST_EMPTY_TEXT } from '../const.js';
+import {render} from '../framework/render.js';
+import {LIST_EMPTY_TEXT} from '../const.js';
+import { calculateDateDifference } from '../util.js';
 
 
 export default class TripEventsPresenter {
@@ -62,7 +63,9 @@ export default class TripEventsPresenter {
         this.#renderPoints(this.#points);
         break;
       case 'time':
-        // code block
+        this.#points.sort((a, b) =>
+          calculateDateDifference(b.dateTo, b.dateFrom) - calculateDateDifference(a.dateTo, a.dateFrom));
+        this.#renderPoints(this.#points);
         break;
       case 'price':
         this.#points.sort((a, b) => a.basePrice - b.basePrice);
