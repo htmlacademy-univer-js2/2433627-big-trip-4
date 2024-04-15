@@ -1,25 +1,29 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatEventDate, isElementHas } from '../util.js';
+import { formatEventDate, isElementHas, calculateDateDifference, formatEventDuration } from '../util.js';
 
 const DATE_FORMAT = 'MMM D';
 const TIME_FORMAT = 'HH:mm';
 
 function createPointTemplate(point, city, offer) {
+  const dateFrom = point.dateFrom;
+  const dateTo = point.dateTo;
+  const type = point.type;
+
   return(
     `<li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="${point.dateFrom}">${formatEventDate(point.dateFrom, DATE_FORMAT)}</time>
+        <time class="event__date" datetime="${dateFrom}">${formatEventDate(dateFrom, DATE_FORMAT)}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${point.type} ${city}</h3>
+        <h3 class="event__title">${type} ${city}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${point.dateFrom}">${formatEventDate(point.dateFrom, TIME_FORMAT)}</time>
+            <time class="event__start-time" datetime="${dateFrom}">${formatEventDate(dateFrom, TIME_FORMAT)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${point.dateTo}">${formatEventDate(point.dateTo, TIME_FORMAT)}</time>
+            <time class="event__end-time" datetime="${dateTo}">${formatEventDate(dateTo, TIME_FORMAT)}</time>
           </p>
-          <p class="event__duration"></p>
+          <p class="event__duration">${formatEventDuration(calculateDateDifference(dateFrom, dateTo))}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
