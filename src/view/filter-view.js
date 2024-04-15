@@ -54,7 +54,22 @@ function createFilterTemplate() {
 }
 
 export default class FilterView extends AbstractView {
+  #onFilterClick = null;
+
+  constructor(onFilterClick) {
+    super();
+    this.#onFilterClick = onFilterClick;
+
+    this.element.querySelectorAll('input')
+      .forEach((item) => item.addEventListener('change', this.#changeFilterType));
+  }
+
   get template() {
     return createFilterTemplate();
   }
+
+  #changeFilterType = (evt) => {
+    evt.preventDefault();
+    this.#onFilterClick(evt.target.value);
+  };
 }
