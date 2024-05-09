@@ -5,7 +5,7 @@ import ListEmptyView from '../view/list-empty-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import {render} from '../framework/render.js';
 import {LIST_EMPTY_TEXT} from '../const.js';
-import { calculateDateDifference } from '../util.js';
+import { calculateDateDifference, updateItem } from '../util.js';
 
 
 export default class TripEventsPresenter {
@@ -47,12 +47,10 @@ export default class TripEventsPresenter {
     }
   }
 
-  #changePointFavorite = (point) => {
-    this.#points = this.#points.map((element) => element.id === point.id ? point : element);
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
 
-    const destination = this.#destinationsModel.getDestinationById(point.destination);
-    const offer = this.#offersModel.getOfferByType(point.type);
-    this.#pointPresenters.get(point.id).init(point, destination, offer);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
   #changeSortType = (type) => {
@@ -109,10 +107,8 @@ export default class TripEventsPresenter {
 
     for (let i = 0; i < points.length; i++) {
       const point = points[i];
-      const destination = this.#destinationsModel.getDestinationById(point.destination);
-      const offer = this.#offersModel.getOfferByType(point.type);
-      const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changePointFavorite, this.#changeViewHandler);
-      pointPresenter.init(point, destination, offer);
+      const pointPresenter = new TripPointPresenter(this.#listComponent.element, this.#changeViewHandler, this.#handlePointChange, this.#offersModel, this.#destinationsModel);
+      pointPresenter.init(point);
       this.#pointPresenters.set(point.id, pointPresenter);
     }
   };

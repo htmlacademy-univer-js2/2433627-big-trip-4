@@ -30,7 +30,7 @@ function createPointTemplate(point, city, offer) {
         </p>
         ${isElementHas(offer.offers) ? `<h4 class="visually-hidden">Offers:</h4>
           <ul class="event__selected-offers">
-            ${createOffersTemplate(offer)}
+            ${createOffersTemplate(offer, point.offers)}
         </ul>` : ''}
         <button class="event__favorite-btn ${point.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
           <span class="visually-hidden">Add to favorite</span>
@@ -46,15 +46,16 @@ function createPointTemplate(point, city, offer) {
   );
 }
 
-function createOffersTemplate(offer) {
-  const offersList = offer.offers.map((offerItem) => `<li class="event__offer">
+function createOffersTemplate(offer, pointOffers) {
+  const offersList = offer.offers.map((offerItem) => {
+    const isCheked = pointOffers.find((id) => id === offerItem.id) !== undefined;
+    return isCheked ? `<li class="event__offer">
        <span class="event__offer-title">${offerItem.title}</span>
        &plus;&euro;&nbsp;
        <span class="event__offer-price">${offerItem.price}</span>
-       </li>`);
+       </li>` : '';});
   return offersList.join('');
 }
-
 export default class PointView extends AbstractView{
   #point = null;
   #city = null;

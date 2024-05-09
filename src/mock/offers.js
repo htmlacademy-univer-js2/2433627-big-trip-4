@@ -9,6 +9,11 @@ const offers = [
         id: 'of1',
         title: 'Upgrade',
         price: getRandomInteger(MIN_PRICE, MAX_PRICE)
+      },
+      {
+        id: 'of0',
+        title: 'NoCheked',
+        price: 0
       }]
   },
   {
@@ -28,7 +33,21 @@ const offers = [
         title: 'First Class',
         price: getRandomInteger(MIN_PRICE, MAX_PRICE)
       }]
-  }
+  },
+  {
+    type: 'train',
+    offers: [
+      {
+        id: 'of8765',
+        title: 'Upgrade',
+        price: getRandomInteger(MIN_PRICE, MAX_PRICE)
+      },
+      {
+        id: 'of34567654',
+        title: 'NoCheked',
+        price: 0
+      }]
+  },
 ];
 
 export {offers};
