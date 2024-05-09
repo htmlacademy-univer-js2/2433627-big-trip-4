@@ -21,6 +21,8 @@ export default class TripPointPresenter {
   #destinationsModel = null;
 
   #point = null;
+  #offer = null;
+  #destination = null;
 
   #view = VIEW.DEFAULT;
 
@@ -35,24 +37,23 @@ export default class TripPointPresenter {
 
   init(point) {
     this.#point = point;
-
-    const destination = this.#destinationsModel.getDestinationById(this.#point.destination);
-    const offer = this.#offersModel.getOfferByType(this.#point.type);
+    this.#destination = this.#getDestinationById(this.#point.destination);
+    this.#offer = this.#getOfferByType(this.#point.type);
 
     const prevPointComponent = this.#pointComponent;
 
     this.#pointComponent = new PointView({
       point,
-      city: destination.name,
-      offer,
+      city: this.#destination.name,
+      offer: this.#offer,
       onRollupButtonClick: this.#pointRollupButtonClikHandler,
       onFavoriteButtonClick: this.#favoriteButtonClickHandler
     });
 
     this.#editPointComponent = new EditablePointView({
       point,
-      destination,
-      offer,
+      destination: this.#destination,
+      offer: this.#offer,
       onDeleteButtonClick: this.#deleteButtonClikHandler,
       onSubmitForm: this.#submitFormHandler,
       onRollupButtonClick: this.#formRollupButtonClikHandler,
@@ -85,6 +86,7 @@ export default class TripPointPresenter {
 
   resetView = () => {
     if (this.#view === VIEW.EDIT){
+      this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
       this.#replaceFormToPoint();
     }
   };
@@ -118,6 +120,7 @@ export default class TripPointPresenter {
   #onFormKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
       this.#replaceFormToPoint();
     }
   };
@@ -125,4 +128,6 @@ export default class TripPointPresenter {
   #getOfferByType = (type) => this.#offersModel.getOfferByType(type);
 
   #getDestinationByName = (name) => this.#destinationsModel.getDestinationByName(name);
+
+  #getDestinationById = (id) => this.#destinationsModel.getDestinationById(id);
 }
