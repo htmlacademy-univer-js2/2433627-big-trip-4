@@ -141,6 +141,12 @@ export default class EditablePointView extends AbstractStatefulView {
     return createEditablePointTemplate(this._state);
   }
 
+  reset(point, destination, offer) {
+    this.updateElement(
+      EditablePointView.parsePointToState(point, destination, offer)
+    );
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event--edit')
       .addEventListener('submit', this.#submitFormHandler);
