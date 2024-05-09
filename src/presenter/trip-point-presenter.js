@@ -11,24 +11,33 @@ const VIEW = {
 
 export default class TripPointPresenter {
   #pointContainer = null;
-  #onFavoriteChange = null;
   #onViewChange = null;
+  #onDataChange = null;
 
   #pointComponent = null;
   #editPointComponent = null;
+
+  #offersModel = null;
+  #destinationsModel = null;
 
   #point = null;
 
   #view = VIEW.DEFAULT;
 
-  constructor(pointContainer, onFavoriteChange, onViewChange) {
+  constructor(pointContainer, onViewChange, onDataChange, offersModel, destinationsModel) {
     this.#pointContainer = pointContainer;
-    this.#onFavoriteChange = onFavoriteChange;
     this.#onViewChange = onViewChange;
+    this.#onDataChange = onDataChange;
+
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
   }
 
-  init(point, destination, offer) {
+  init(point) {
     this.#point = point;
+
+    const destination = this.#destinationsModel.getDestinationById(this.#point.destination);
+    const offer = this.#offersModel.getOfferByType(this.#point.type);
 
     const prevPointComponent = this.#pointComponent;
 
@@ -46,7 +55,9 @@ export default class TripPointPresenter {
       offer,
       onDeleteButtonClick: this.#deleteButtonClikHandler,
       onSubmitForm: this.#submitFormHandler,
-      onRollupButtonClick: this.#formRollupButtonClikHandler
+      onRollupButtonClick: this.#formRollupButtonClikHandler,
+      getDestinationByName: this.#getDestinationByName,
+      getOfferByType : this.#getOfferByType
     });
 
     if (prevPointComponent !== null && this.#pointContainer.contains(prevPointComponent.element)) {
@@ -58,7 +69,7 @@ export default class TripPointPresenter {
   }
 
   #favoriteButtonClickHandler = () => {
-    this.#onFavoriteChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#onDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #replacePointToForm() {
@@ -93,7 +104,8 @@ export default class TripPointPresenter {
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
 
-  #submitFormHandler = () => {
+  #submitFormHandler = (point) => {
+    this.#onDataChange(point);
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
@@ -109,4 +121,8 @@ export default class TripPointPresenter {
       this.#replaceFormToPoint();
     }
   };
+
+  #getOfferByType = (type) => this.#offersModel.getOfferByType(type);
+
+  #getDestinationByName = (name) => this.#destinationsModel.getDestinationByName(name);
 }

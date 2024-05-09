@@ -19,6 +19,10 @@ function createId() {
   };
 }
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 function getRandomInteger(a, b) {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -33,10 +37,10 @@ function calculateDateDifference(start, end) {
   return end.diff(start, 'minute');
 }
 
-const isElementHas = (element) => element.length > 0;
+const isElementHas = (element) => element !== null && element !== undefined && element.length > 0;
 
 const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {createId, getRandomInteger, getRandomArrayElement, formatEventDate, isElementHas, isEscapeKey, calculateDateDifference, formatEventDuration};
+export {createId, getRandomInteger, getRandomArrayElement, formatEventDate, isElementHas, isEscapeKey, calculateDateDifference, formatEventDuration, updateItem};
