@@ -1,6 +1,9 @@
 import { POINT_TYPE, CITIES } from '../const.js';
 import { formatEventDate, isElementHas } from '../util.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 
@@ -124,6 +127,8 @@ export default class EditablePointView extends AbstractStatefulView {
   #getOfferByType = null;
   #getDestinationByName = null;
 
+  #fromDatepicker = null;
+  #toDatepicker = null;
 
   constructor ({point, destination, offer, onDeleteButtonClick, onSubmitForm, onRollupButtonClick, getDestinationByName, getOfferByType}){
     super();
@@ -141,6 +146,26 @@ export default class EditablePointView extends AbstractStatefulView {
     return createEditablePointTemplate(this._state);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#fromDatepicker) {
+      this.#fromDatepicker.destroy();
+      this.#fromDatepicker = null;
+    }
+
+    if (this.#toDatepicker) {
+      this.#toDatepicker.destroy();
+      this.#toDatepicker = null;
+    }
+  }
+
+  reset(point, destination, offer) {
+    this.updateElement(
+      EditablePointView.parsePointToState(point, destination, offer)
+    );
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event--edit')
       .addEventListener('submit', this.#submitFormHandler);
@@ -155,6 +180,8 @@ export default class EditablePointView extends AbstractStatefulView {
       forEach((input) => input.addEventListener('click', this.#typeInputHandler));
     this.element.querySelector('.event__input--destination').
       addEventListener('change', this.#destinationInputHandler);
+
+    this.#setDatepicker();
   }
 
   static parsePointToState(point, destination, offer) {
@@ -164,6 +191,8 @@ export default class EditablePointView extends AbstractStatefulView {
       destination,
       type: point.type,
       name: destination.name,
+      dateFrom: point.dateFrom,
+      dateTo: point.dateTo,
       isOffers: isElementHas(offer.offers),
       isDestination: isElementHas(destination.description),
       isPictures: isElementHas(destination.pictures),
@@ -223,4 +252,37 @@ export default class EditablePointView extends AbstractStatefulView {
       isPictures: isElementHas(newDestination?.pictures),
     });
   };
+
+  #dateFromChangeHandler = (userDate) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToChangeHandler = (userDate) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #setDatepicker() {
+    this.#fromDatepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'j F',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      },
+    );
+
+    this.#toDatepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'j F',
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler
+      },
+    );
+  }
 }
+
