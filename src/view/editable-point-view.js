@@ -3,6 +3,7 @@ import { formatEventDate, isElementHas } from '../util.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 
+import 'flatpickr/dist/flatpickr.min.css';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 
