@@ -118,9 +118,6 @@ function createOffersList(offer, pointOffers) {
 }
 
 export default class EditablePointView extends AbstractStatefulView {
-  #point = null;
-  #destination = null;
-  #offer = null;
   #onSubmitForm = null;
   #onDeleteButtonClick = null;
   #onRollupButtonClick = null;
@@ -270,7 +267,7 @@ export default class EditablePointView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         dateFormat: 'j F',
-        defaultDate: this._state.dateFrom,
+        defaultDate: new Date(this._state.dateFrom),
         onChange: this.#dateFromChangeHandler
       },
     );
@@ -279,7 +276,7 @@ export default class EditablePointView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         dateFormat: 'j F',
-        defaultDate: this._state.dateTo,
+        defaultDate: new Date(this._state.dateTo),
         onChange: this.#dateToChangeHandler
       },
     );

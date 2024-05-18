@@ -2,6 +2,7 @@ import EditablePointView from '../view/editable-point-view.js';
 import PointView from '../view/point-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../util.js';
+import { UserAction, UpdateType } from '../const.js';
 
 
 const VIEW = {
@@ -70,7 +71,11 @@ export default class TripPointPresenter {
   }
 
   #favoriteButtonClickHandler = () => {
-    this.#onDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#onDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 
   #replacePointToForm() {
@@ -107,7 +112,11 @@ export default class TripPointPresenter {
   };
 
   #submitFormHandler = (point) => {
-    this.#onDataChange(point);
+    this.#onDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point
+    );
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
