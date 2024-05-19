@@ -2,8 +2,9 @@ import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
+import NewPointPresenter from './new-point-presenter.js';
 import {render, remove} from '../framework/render.js';
-import { UserAction, UpdateType, SortType} from '../const.js';
+import { UserAction, UpdateType, SortType, FilterType} from '../const.js';
 import { calculateDateDifference, filter } from '../util.js';
 
 
@@ -21,17 +22,24 @@ export default class TripEventsPresenter {
   #currentSortType = SortType.PRICE;
 
   #pointPresenters = new Map();
-
-  // #points = [];
+  #newTaskPresenter = null;
 
   #filterType = null;
 
-  constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
+  constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewTaskDestroy}) {
     this.#tpipEventsContainer = tpipEventsContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
+
+    this.#newTaskPresenter = new NewPointPresenter({
+      pointListContainer: this.#listComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewTaskDestroy,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -57,6 +65,12 @@ export default class TripEventsPresenter {
 
   init() {
     this.#renderBoard();
+  }
+
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newTaskPresenter.init();
   }
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -96,6 +110,7 @@ export default class TripEventsPresenter {
   };
 
   #changeViewHandler = () => {
+    this.#newTaskPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -142,6 +157,7 @@ export default class TripEventsPresenter {
   }
 
   #clearBoard(resetSortType = false) {
+    this.#newTaskPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.remove());
     this.#pointPresenters.clear();
 

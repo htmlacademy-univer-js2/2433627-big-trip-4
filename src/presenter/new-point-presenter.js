@@ -1,57 +1,65 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
-import TaskEditView from '../view/task-edit-view.js';
+import EditablePointView from '../view/editable-point-view.js';
 import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
 import { isEscapeKey } from '../util.js';
 
-export default class NewTaskPresenter {
-  #taskListContainer = null;
+export default class NewPointPresenter {
+  #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
 
-  #taskEditComponent = null;
+  #pointEditComponent = null;
 
-  constructor({taskListContainer, onDataChange, onDestroy}) {
-    this.#taskListContainer = taskListContainer;
+  #offersModel = null;
+  #destinationsModel = null;
+
+  constructor({pointListContainer, onDataChange, onDestroy, offersModel, destinationsModel}) {
+    this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
   }
 
   init() {
-    if (this.#taskEditComponent !== null) {
+    if (this.#pointEditComponent !== null) {
       return;
     }
 
-    this.#taskEditComponent = new TaskEditView({
-      onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick
+    this.#pointEditComponent = new EditablePointView({
+      onSubmitForm: this.#handleFormSubmit,
+      onDeleteButtonClick: this.#handleDeleteClick,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel,
+      isNew: true
     });
 
-    render(this.#taskEditComponent, this.#taskListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
   destroy() {
-    if (this.#taskEditComponent === null) {
+    if (this.#pointEditComponent === null) {
       return;
     }
 
     this.#handleDestroy();
 
-    remove(this.#taskEditComponent);
-    this.#taskEditComponent = null;
+    remove(this.#pointEditComponent);
+    this.#pointEditComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleFormSubmit = (task) => {
+  #handleFormSubmit = (point) => {
     this.#handleDataChange(
-      UserAction.ADD_TASK,
+      UserAction.ADD_POINT,
       UpdateType.MINOR,
       // Пока у нас нет сервера, который бы после сохранения
       // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...task},
+      {id: nanoid(), ...point},
     );
     this.destroy();
   };
