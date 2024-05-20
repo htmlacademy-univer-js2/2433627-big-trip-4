@@ -9,14 +9,52 @@ const DESCRIPTIONS = [
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
 ];
 
+const FilterType = {
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  PRESENT: 'present',
+  FUTUTRE: 'future'
+};
+
 const LIST_EMPTY_TEXT = {
-  'everything' : 'Click New Event to create your first point',
-  'past' : 'There are no past events now',
-  'present' : 'There are no present events now',
-  'future' : 'There are no future events now'
+  [FilterType.EVERYTHING] : 'Click New Event to create your first point',
+  [FilterType.PAST] : 'There are no past events now',
+  [FilterType.PRESENT] : 'There are no present events now',
+  [FilterType.FUTUTRE] : 'There are no future events now'
+};
+
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
 };
 
 const MIN_PRICE = 100;
 const MAX_PRICE = 5000;
 
-export {POINT_TYPE, CITIES, DESCRIPTIONS, MAX_PRICE, MIN_PRICE, LIST_EMPTY_TEXT};
+export {
+  POINT_TYPE,
+  CITIES,
+  DESCRIPTIONS,
+  MAX_PRICE,
+  MIN_PRICE,
+  LIST_EMPTY_TEXT,
+  UserAction,
+  UpdateType,
+  FilterType,
+  SortType
+};

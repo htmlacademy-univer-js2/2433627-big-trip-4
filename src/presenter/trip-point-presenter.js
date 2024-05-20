@@ -2,6 +2,7 @@ import EditablePointView from '../view/editable-point-view.js';
 import PointView from '../view/point-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../util.js';
+import { UserAction, UpdateType } from '../const.js';
 
 
 const VIEW = {
@@ -37,8 +38,8 @@ export default class TripPointPresenter {
 
   init(point) {
     this.#point = point;
-    this.#destination = this.#getDestinationById(this.#point.destination);
-    this.#offer = this.#getOfferByType(this.#point.type);
+    this.#destination = this.#destinationsModel.getDestinationById(this.#point.destination);
+    this.#offer = this.#offersModel.getOfferByType(this.#point.type);
 
     const prevPointComponent = this.#pointComponent;
 
@@ -57,8 +58,8 @@ export default class TripPointPresenter {
       onDeleteButtonClick: this.#deleteButtonClikHandler,
       onSubmitForm: this.#submitFormHandler,
       onRollupButtonClick: this.#formRollupButtonClikHandler,
-      getDestinationByName: this.#getDestinationByName,
-      getOfferByType : this.#getOfferByType
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel
     });
 
     if (prevPointComponent !== null && this.#pointContainer.contains(prevPointComponent.element)) {
@@ -70,7 +71,11 @@ export default class TripPointPresenter {
   }
 
   #favoriteButtonClickHandler = () => {
-    this.#onDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#onDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 
   #replacePointToForm() {
@@ -102,17 +107,27 @@ export default class TripPointPresenter {
   };
 
   #formRollupButtonClikHandler = () => {
+    this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
 
   #submitFormHandler = (point) => {
-    this.#onDataChange(point);
+    this.#onDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point
+    );
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
 
-  #deleteButtonClikHandler = () => {
+  #deleteButtonClikHandler = (point) => {
+    this.#onDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
@@ -124,10 +139,4 @@ export default class TripPointPresenter {
       this.#replaceFormToPoint();
     }
   };
-
-  #getOfferByType = (type) => this.#offersModel.getOfferByType(type);
-
-  #getDestinationByName = (name) => this.#destinationsModel.getDestinationByName(name);
-
-  #getDestinationById = (id) => this.#destinationsModel.getDestinationById(id);
 }

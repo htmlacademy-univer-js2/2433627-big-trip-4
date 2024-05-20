@@ -7,8 +7,8 @@ const points = [
   {
     id: getPointId(),
     basePrice: getRandomInteger(MIN_PRICE, MAX_PRICE),
-    dateFrom: '2019-07-10T11:55:56',
-    dateTo: '2019-07-11T12:22:13',
+    dateFrom: '2025-07-10T11:55:56',
+    dateTo: '2025-07-11T12:22:13',
     destination: 'dest1',
     isFavorite: false,
     offers: [
@@ -19,7 +19,7 @@ const points = [
   {
     id: getPointId(),
     basePrice: getRandomInteger(MIN_PRICE, MAX_PRICE),
-    dateFrom: '2019-07-10T22:55:56',
+    dateFrom: '2019-08-10T22:55:56',
     dateTo: '2019-07-11T11:22:13',
     destination: 'dest2',
     isFavorite: false,
@@ -29,8 +29,8 @@ const points = [
   {
     id: getPointId(),
     basePrice: getRandomInteger(MIN_PRICE, MAX_PRICE),
-    dateFrom: '2019-07-10T22:55:56',
-    dateTo: '2019-07-11T11:22:13',
+    dateFrom: '2019-07-09T22:55:56',
+    dateTo: '2019-09-11T11:22:13',
     destination: 'dest3',
     isFavorite: false,
     offers: [

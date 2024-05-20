@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { FilterType } from './const';
 
 function formatEventDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
@@ -43,4 +44,22 @@ const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {createId, getRandomInteger, getRandomArrayElement, formatEventDate, isElementHas, isEscapeKey, calculateDateDifference, formatEventDuration, updateItem};
+const filter = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.PAST]: (points) => points.filter((point) => dayjs().isAfter(point.dateTo, 'D')),
+  [FilterType.FUTUTRE]: (points) => points.filter((point) => dayjs().isBefore(point.dateFrom, 'D')),
+  [FilterType.PRESENT]: (points) => points.filter((point) => !dayjs().isAfter(point.dateTo, 'D') && !dayjs().isBefore(point.dateFrom, 'D'))
+};
+
+export {
+  createId,
+  getRandomInteger,
+  getRandomArrayElement,
+  formatEventDate,
+  isElementHas,
+  isEscapeKey,
+  calculateDateDifference,
+  formatEventDuration,
+  updateItem,
+  filter
+};
