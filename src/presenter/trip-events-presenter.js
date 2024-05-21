@@ -1,8 +1,11 @@
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
+import LoadingView from '../view/loading-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
+
 import {render, remove} from '../framework/render.js';
 import { UserAction, UpdateType, SortType, FilterType} from '../const.js';
 import { calculateDateDifference, filter } from '../util.js';
@@ -12,6 +15,7 @@ export default class TripEventsPresenter {
   #listComponent = new ListView();
   #listEmptyComponent = null;
   #sortComponent = null;
+  #loadingComponent = new LoadingView();
 
   #tpipEventsContainer = null;
   #pointsModel = null;
@@ -25,6 +29,7 @@ export default class TripEventsPresenter {
   #newTaskPresenter = null;
 
   #filterType = null;
+  #isLoading = true;
 
   constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewTaskDestroy}) {
     this.#tpipEventsContainer = tpipEventsContainer;
@@ -100,6 +105,12 @@ export default class TripEventsPresenter {
         this.#clearBoard(true);
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#clearBoard(true);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -123,9 +134,14 @@ export default class TripEventsPresenter {
     render(this.#listComponent, this.#tpipEventsContainer);
   };
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#tpipEventsContainer);
+  }
+
   #renderListEmpty = () => {
     this.#listEmptyComponent = new ListEmptyView(this.#filterType);
     render(this.#listEmptyComponent, this.#tpipEventsContainer);
+    remove(this.#loadingComponent);
   };
 
   #renderPoints = (points) => {
@@ -151,6 +167,11 @@ export default class TripEventsPresenter {
   };
 
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
     this.#renderList();
     this.#renderPoints(this.points);

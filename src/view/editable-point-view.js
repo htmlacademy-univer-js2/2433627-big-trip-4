@@ -1,4 +1,4 @@
-import { POINT_TYPE, CITIES } from '../const.js';
+import { POINT_TYPE } from '../const.js';
 import { formatEventDate, isElementHas } from '../util.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
@@ -17,7 +17,7 @@ const newPoint = {
   type: 'flight'
 };
 
-function createEditablePointTemplate(state, isNew) {
+function createEditablePointTemplate(state, isNew, CITIES) {
   const type = state.type;
   return(
     `<li class="trip-events__item">
@@ -44,7 +44,7 @@ function createEditablePointTemplate(state, isNew) {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${state.name === undefined ? '' : `value="${state.name}"`} list="destination-list-1" autocomplete="off">
           <datalist id="destination-list-1">
-            ${createDestinationsList()}
+            ${createDestinationsList(CITIES)}
           </datalist>
         </div>
 
@@ -61,7 +61,7 @@ function createEditablePointTemplate(state, isNew) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.point.basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -106,7 +106,7 @@ function createEventTypeList(type) {
   return eventTypeList.join('');
 }
 
-function createDestinationsList() {
+function createDestinationsList(CITIES) {
   const destinationsList = CITIES.map((city) => `<option value=${city}>${city}</option>`);
   return destinationsList.join('');
 }
@@ -129,6 +129,7 @@ function createOffersList(offer, checkedOffers) {
 }
 
 export default class EditablePointView extends AbstractStatefulView {
+  #CITIES = null;
   #onSubmitForm = null;
   #onDeleteButtonClick = null;
   #onRollupButtonClick = null;
@@ -149,12 +150,13 @@ export default class EditablePointView extends AbstractStatefulView {
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#isNew = isNew;
+    this.#CITIES = this.#destinationsModel.getCityNames();
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditablePointTemplate(this._state, this.#isNew);
+    return createEditablePointTemplate(this._state, this.#isNew, this.#CITIES);
   }
 
   removeElement() {
@@ -196,6 +198,9 @@ export default class EditablePointView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__offer-checkbox')
       ?.forEach((checkbox) => checkbox.addEventListener('change', this.#offerInputHandler));
 
+    this.element.querySelector('.event__input--price')
+      ?.addEventListener('change', this.#priceInputHandler);
+
     this.#setDatepicker();
   }
 
@@ -205,6 +210,7 @@ export default class EditablePointView extends AbstractStatefulView {
       offer,
       destination,
       type: point.type,
+      basePrice: point.basePrice,
       name: destination?.name,
       dateFrom: point.dateFrom,
       dateTo: point.dateTo,
@@ -220,6 +226,9 @@ export default class EditablePointView extends AbstractStatefulView {
     point.destination = state.destination.id;
     point.type = state.type;
     point.offers = state.checkedOffers;
+    point.dateFrom = state.dateFrom;
+    point.dateTo = state.dateTo;
+    point.basePrice = Number(state.basePrice);
 
     return point;
   }
@@ -249,6 +258,14 @@ export default class EditablePointView extends AbstractStatefulView {
   #rollupButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onRollupButtonClick();
+  };
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+    const newPrice = evt.target.value;
+    this.updateElement({
+      basePrice: newPrice
+    });
   };
 
   #typeInputHandler = (evt) => {
@@ -292,13 +309,13 @@ export default class EditablePointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = (userDate) => {
     this.updateElement({
-      dateFrom: userDate,
+      dateFrom: new Date(userDate),
     });
   };
 
   #dateToChangeHandler = (userDate) => {
     this.updateElement({
-      dateTo: userDate,
+      dateTo: new Date(userDate),
     });
   };
 
