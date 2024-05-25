@@ -7,7 +7,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 const newPoint = {
-  id: 11111,
   basePrice: 0,
   dateFrom: new Date(),
   dateTo: new Date(),
@@ -19,6 +18,7 @@ const newPoint = {
 
 function createEditablePointTemplate(state, isNew, CITIES) {
   const type = state.type;
+  const isDisabled = state.isDisabled;
   return(
     `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -33,7 +33,7 @@ function createEditablePointTemplate(state, isNew, CITIES) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createEventTypeList(type)}
+              ${createEventTypeList(type, isDisabled)}
             </fieldset>
           </div>
         </div>
@@ -42,7 +42,7 @@ function createEditablePointTemplate(state, isNew, CITIES) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type[0].toUpperCase() + type.slice(1)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${state.name === undefined ? '' : `value="${state.name}"`} list="destination-list-1" autocomplete="off">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${state.name === undefined ? '' : `value="${state.name}"`} list="destination-list-1" autocomplete="off" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             ${createDestinationsList(CITIES)}
           </datalist>
@@ -50,10 +50,10 @@ function createEditablePointTemplate(state, isNew, CITIES) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatEventDate(state.point.dateFrom, DATE_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatEventDate(state.point.dateFrom, DATE_FORMAT)}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatEventDate(state.point.dateTo, DATE_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatEventDate(state.point.dateTo, DATE_FORMAT)}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -61,11 +61,11 @@ function createEditablePointTemplate(state, isNew, CITIES) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${createResetButtonTemplate(isNew, state.isDeleting)}</button>
 
         ${isNew ? '' : `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -75,7 +75,7 @@ function createEditablePointTemplate(state, isNew, CITIES) {
         ${state.isOffers ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${createOffersList(state.offer, state.checkedOffers)}` : ''}
+            ${createOffersList(state.offer, state.checkedOffers, isDisabled)}` : ''}
           </div>
         </section>
 
@@ -93,14 +93,22 @@ function createEditablePointTemplate(state, isNew, CITIES) {
   );
 }
 
+function createResetButtonTemplate(isNew, isDeleting) {
+  if (isNew) {
+    return 'Cancel';
+  } else {
+    return isDeleting ? 'Deleting...' : 'Delete';
+  }
+}
+
 function createDestinationPhotosList(pictures) {
   const photosList = pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`);
   return photosList.join('');
 }
 
-function createEventTypeList(type) {
+function createEventTypeList(type, isDisabled) {
   const eventTypeList = POINT_TYPE.map((pointType) => `<div class="event__type-item">
-    <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
+    <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${isDisabled ? 'disabled' : ''}>
     <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${pointType[0].toUpperCase() + pointType.slice(1)} ${pointType === type ? 'checked' : ''}</label>
     </div>`);
   return eventTypeList.join('');
@@ -111,13 +119,13 @@ function createDestinationsList(CITIES) {
   return destinationsList.join('');
 }
 
-function createOffersList(offer, checkedOffers) {
+function createOffersList(offer, checkedOffers, isDisabled) {
   const offerList = offer.offers.map((offerItem) => {
     const offerName = offerItem.title.replace(' ', '').toLowerCase();
     const isCheked = checkedOffers.find((id) => id === offerItem.id) !== undefined;
 
     return `<div class="event__offewar-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerName}-1" type="checkbox" name="event-offer-${offerName}" data-id = '${offerItem.id}' ${isCheked ? 'checked' : ''}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerName}-1" type="checkbox" name="event-offer-${offerName}" data-id = '${offerItem.id}' ${isCheked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
     <label class="event__offer-label" for="event-offer-${offerName}-1">
     <span class="event__offer-title">${offerItem.title}</span>
     &plus;&euro;&nbsp;
@@ -218,6 +226,9 @@ export default class EditablePointView extends AbstractStatefulView {
       isOffers: isElementHas(offer?.offers),
       isDestination: isElementHas(destination?.description),
       isPictures: isElementHas(destination?.pictures),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 

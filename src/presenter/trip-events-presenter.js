@@ -26,22 +26,22 @@ export default class TripEventsPresenter {
   #currentSortType = SortType.PRICE;
 
   #pointPresenters = new Map();
-  #newTaskPresenter = null;
+  #newPointPresenter = null;
 
   #filterType = null;
   #isLoading = true;
 
-  constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewTaskDestroy}) {
+  constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
     this.#tpipEventsContainer = tpipEventsContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#newTaskPresenter = new NewPointPresenter({
+    this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#listComponent.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onNewTaskDestroy,
+      onDestroy: onNewPointDestroy,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel
     });
@@ -75,19 +75,36 @@ export default class TripEventsPresenter {
   createPoint() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newTaskPresenter.init();
+    this.#newPointPresenter.init();
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
+
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
+
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
     }
   };
@@ -121,7 +138,7 @@ export default class TripEventsPresenter {
   };
 
   #changeViewHandler = () => {
-    this.#newTaskPresenter.destroy();
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -178,7 +195,7 @@ export default class TripEventsPresenter {
   }
 
   #clearBoard(resetSortType = false) {
-    this.#newTaskPresenter.destroy();
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.remove());
     this.#pointPresenters.clear();
 
