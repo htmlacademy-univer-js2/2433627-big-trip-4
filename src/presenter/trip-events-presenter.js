@@ -2,6 +2,7 @@ import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import LoadingView from '../view/loading-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+import TripInfoView from '../view/trip-info-view.js';
 
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
@@ -16,8 +17,11 @@ export default class TripEventsPresenter {
   #listEmptyComponent = null;
   #sortComponent = null;
   #loadingComponent = new LoadingView();
+  #tripInfoComponent = null;
 
   #tpipEventsContainer = null;
+  #mainContainer = null;
+
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
@@ -31,8 +35,9 @@ export default class TripEventsPresenter {
   #filterType = null;
   #isLoading = true;
 
-  constructor({tpipEventsContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
+  constructor({tpipEventsContainer, mainContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
     this.#tpipEventsContainer = tpipEventsContainer;
+    this.#mainContainer = mainContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
@@ -183,12 +188,18 @@ export default class TripEventsPresenter {
     }
   };
 
+  #renderTripInfo = () => {
+    this.#tripInfoComponent = new TripInfoView(this.#pointsModel, this.#destinationsModel);
+    render(this.#tripInfoComponent, this.#mainContainer);
+  };
+
   #renderBoard() {
     if (this.#isLoading) {
       this.#renderLoading();
       return;
     }
 
+    this.#renderTripInfo();
     this.#renderSort();
     this.#renderList();
     this.#renderPoints(this.points);
