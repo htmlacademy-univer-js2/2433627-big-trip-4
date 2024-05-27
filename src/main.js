@@ -31,6 +31,7 @@ const destinationsModel = new DestinationsModel({
 
 const tripEventsPresenter = new TripEventsPresenter({
   tpipEventsContainer : tripEvents,
+  mainContainer,
   pointsModel,
   offersModel,
   destinationsModel,
