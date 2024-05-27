@@ -101,6 +101,41 @@ export default class TripPointPresenter {
     remove(this.#editPointComponent);
   };
 
+  setSaving() {
+    if (this.#view === VIEW.EDIT) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#view === VIEW.EDIT) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#view === VIEW.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
+  }
+
   #pointRollupButtonClikHandler = () => {
     this.#replacePointToForm();
     document.addEventListener('keydown', this.#onFormKeydown);
@@ -118,7 +153,6 @@ export default class TripPointPresenter {
       UpdateType.MINOR,
       point
     );
-    this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onFormKeydown);
   };
 
