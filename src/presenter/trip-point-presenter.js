@@ -70,36 +70,17 @@ export default class TripPointPresenter {
     }
   }
 
-  #favoriteButtonClickHandler = () => {
-    this.#onDataChange(
-      UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite}
-    );
-  };
-
-  #replacePointToForm() {
-    this.#onViewChange();
-    replace(this.#editPointComponent, this.#pointComponent);
-    this.#view = VIEW.EDIT;
-  }
-
-  #replaceFormToPoint() {
-    replace(this.#pointComponent, this.#editPointComponent);
-    this.#view = VIEW.DEFAULT;
-  }
-
-  resetView = () => {
+  resetView() {
     if (this.#view === VIEW.EDIT){
       this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
       this.#replaceFormToPoint();
     }
-  };
+  }
 
-  remove = () => {
+  remove() {
     remove(this.#pointComponent);
     remove(this.#editPointComponent);
-  };
+  }
 
   setSaving() {
     if (this.#view === VIEW.EDIT) {
@@ -134,6 +115,17 @@ export default class TripPointPresenter {
     };
 
     this.#editPointComponent.shake(resetFormState);
+  }
+
+  #replacePointToForm() {
+    this.#onViewChange();
+    replace(this.#editPointComponent, this.#pointComponent);
+    this.#view = VIEW.EDIT;
+  }
+
+  #replaceFormToPoint() {
+    replace(this.#pointComponent, this.#editPointComponent);
+    this.#view = VIEW.DEFAULT;
   }
 
   #pointRollupButtonClikHandler = () => {
@@ -172,5 +164,13 @@ export default class TripPointPresenter {
       this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
       this.#replaceFormToPoint();
     }
+  };
+
+  #favoriteButtonClickHandler = () => {
+    this.#onDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 }

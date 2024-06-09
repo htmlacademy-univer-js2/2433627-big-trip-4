@@ -6,29 +6,17 @@ function formatEventDate(dueDate, dateFormat) {
 }
 
 function formatEventDuration(diff) {
-  const hours = Math.floor(diff / 60);
+  const days = Math.floor(diff / 1440);
+  const hours = Math.floor((diff % 1440) / 60);
   const minutes = diff % 60;
 
-  return hours === 0 ? `${minutes}M` : `${hours}H ${minutes}M`;
-}
-
-function createId() {
-  let lastGeneratedId = 0;
-  return function () {
-    lastGeneratedId += 1;
-    return lastGeneratedId;
-  };
-}
-
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
-function getRandomInteger(a, b) {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
+  if (days > 0) {
+    return `${days}D ${hours}H ${minutes}M`;
+  } else if (hours > 0) {
+    return `${hours}H ${minutes}M`;
+  } else {
+    return `${minutes}M`;
+  }
 }
 
 function calculateDateDifference(start, end) {
@@ -40,8 +28,6 @@ function calculateDateDifference(start, end) {
 
 const isElementHas = (element) => element !== null && element !== undefined && element.length > 0;
 
-const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
-
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
 const filter = {
@@ -52,14 +38,10 @@ const filter = {
 };
 
 export {
-  createId,
-  getRandomInteger,
-  getRandomArrayElement,
   formatEventDate,
   isElementHas,
   isEscapeKey,
   calculateDateDifference,
   formatEventDuration,
-  updateItem,
   filter
 };

@@ -1,4 +1,4 @@
-import { POINT_TYPE } from '../const.js';
+import { POINT_TYPES } from '../const.js';
 import { formatEventDate, isElementHas } from '../util.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
@@ -107,7 +107,7 @@ function createDestinationPhotosList(pictures) {
 }
 
 function createEventTypeList(type, isDisabled) {
-  const eventTypeList = POINT_TYPE.map((pointType) => `<div class="event__type-item">
+  const eventTypeList = POINT_TYPES.map((pointType) => `<div class="event__type-item">
     <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${isDisabled ? 'disabled' : ''}>
     <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${pointType[0].toUpperCase() + pointType.slice(1)} ${pointType === type ? 'checked' : ''}</label>
     </div>`);
@@ -212,48 +212,25 @@ export default class EditablePointView extends AbstractStatefulView {
     this.#setDatepicker();
   }
 
-  static parsePointToState(point, destination, offer) {
-    return{
-      point,
-      offer,
-      destination,
-      type: point.type,
-      basePrice: point.basePrice,
-      name: destination?.name,
-      dateFrom: point.dateFrom,
-      dateTo: point.dateTo,
-      checkedOffers: point.offers,
-      isOffers: isElementHas(offer?.offers),
-      isDestination: isElementHas(destination?.description),
-      isPictures: isElementHas(destination?.pictures),
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  }
+  #setDatepicker() {
+    this.#fromDatepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'j F, H:i',
+        defaultDate: new Date(this._state.dateFrom),
+        onChange: this.#dateFromChangeHandler
+      },
+    );
 
-  static parseStateToPoint(state) {
-    const point = state.point;
-    point.destination = state.destination.id;
-    point.type = state.type;
-    point.offers = state.checkedOffers;
-    point.dateFrom = state.dateFrom;
-    point.dateTo = state.dateTo;
-    point.basePrice = Number(state.basePrice);
-
-    return point;
-  }
-
-  static parseStateToOffer(state) {
-    const offer = state.offer;
-
-    return offer;
-  }
-
-  static parseStateToDestination(state) {
-    const destination = state.destination;
-
-    return destination;
+    this.#toDatepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'j F, H:i',
+        defaultDate: new Date(this._state.dateTo),
+        minDate: this.#fromDatepicker.selectedDates[0],
+        onChange: this.#dateToChangeHandler
+      },
+    );
   }
 
   #deleteButtonClickHandler = (evt) => {
@@ -334,24 +311,48 @@ export default class EditablePointView extends AbstractStatefulView {
     });
   };
 
-  #setDatepicker() {
-    this.#fromDatepicker = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
-      {
-        dateFormat: 'j F',
-        defaultDate: new Date(this._state.dateFrom),
-        onChange: this.#dateFromChangeHandler
-      },
-    );
+  static parsePointToState(point, destination, offer) {
+    return{
+      point,
+      offer,
+      destination,
+      type: point.type,
+      basePrice: point.basePrice,
+      name: destination?.name,
+      dateFrom: point.dateFrom,
+      dateTo: point.dateTo,
+      checkedOffers: point.offers,
+      isOffers: isElementHas(offer?.offers),
+      isDestination: isElementHas(destination?.description),
+      isPictures: isElementHas(destination?.pictures),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
 
-    this.#toDatepicker = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
-      {
-        dateFormat: 'j F',
-        defaultDate: new Date(this._state.dateTo),
-        onChange: this.#dateToChangeHandler
-      },
-    );
+  static parseStateToPoint(state) {
+    const point = state.point;
+    point.destination = state.destination.id;
+    point.type = state.type;
+    point.offers = state.checkedOffers;
+    point.dateFrom = state.dateFrom;
+    point.dateTo = state.dateTo;
+    point.basePrice = Number(state.basePrice);
+
+    return point;
+  }
+
+  static parseStateToOffer(state) {
+    const offer = state.offer;
+
+    return offer;
+  }
+
+  static parseStateToDestination(state) {
+    const destination = state.destination;
+
+    return destination;
   }
 }
 
