@@ -141,10 +141,10 @@ export default class TripEventsPresenter {
       return;
     }
 
-    this.#renderTripInfo();
     this.#renderSort();
     this.#renderList();
     this.#renderPoints(this.points);
+    this.#renderTripInfo();
   }
 
   #clearBoard(resetSortType = false) {

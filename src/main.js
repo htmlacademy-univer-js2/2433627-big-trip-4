@@ -24,10 +24,10 @@ const pointsModel = new PointsModel({
 const offersModel = new OffersModel({
   offersApi: new OffersApi(END_POINT, AUTHORIZATION)
 });
-const filterModel = new FilterModel();
 const destinationsModel = new DestinationsModel({
   destinationsApi: new DestinationsApi(END_POINT, AUTHORIZATION)
 });
+const filterModel = new FilterModel();
 
 const tripEventsPresenter = new TripEventsPresenter({
   tpipEventsContainer : tripEvents,
@@ -59,8 +59,9 @@ function handleNewPointButtonClick() {
 }
 
 render(newPointButtonComponent, mainContainer);
-offersModel.init();
+
 destinationsModel.init();
+offersModel.init();
+pointsModel.init();
 filterPresenter.init();
 tripEventsPresenter.init();
-pointsModel.init();
