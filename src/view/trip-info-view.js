@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { formatEventDate } from '../util.js';
 
+const DATE_FORMAT = 'MMM D';
+
 function createTripInfoTemplate(pointsModel, destinationsModel, offersModel) {
   const points = pointsModel.points.sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
 
@@ -47,8 +49,7 @@ function getDates(points) {
   const firstPoint = points[0];
   const lastPoint = points[pointsCount - 1];
 
-  const dateFormat = 'MMM D';
-  return `${formatEventDate(firstPoint.dateFrom, dateFormat)}&nbsp;&mdash;&nbsp;${formatEventDate(lastPoint.dateTo, dateFormat)}`;
+  return `${formatEventDate(firstPoint.dateFrom, DATE_FORMAT)}&nbsp;&mdash;&nbsp;${formatEventDate(lastPoint.dateTo, DATE_FORMAT)}`;
 }
 
 function getCost(points, offersModel) {
