@@ -7,7 +7,7 @@ import TripInfoView from '../view/trip-info-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import { UserAction, UpdateType, SortType, FilterType} from '../const.js';
 import { calculateDateDifference, filter } from '../util.js';
 
@@ -189,8 +189,8 @@ export default class TripEventsPresenter {
   };
 
   #renderTripInfo = () => {
-    this.#tripInfoComponent = new TripInfoView(this.#pointsModel, this.#destinationsModel);
-    render(this.#tripInfoComponent, this.#mainContainer);
+    this.#tripInfoComponent = new TripInfoView(this.#pointsModel, this.#destinationsModel, this.#offersModel);
+    render(this.#tripInfoComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
   };
 
   #renderBoard() {
@@ -212,6 +212,7 @@ export default class TripEventsPresenter {
 
     remove(this.#sortComponent);
     remove(this.#listEmptyComponent);
+    remove(this.#tripInfoComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;

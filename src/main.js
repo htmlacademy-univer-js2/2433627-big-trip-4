@@ -36,7 +36,7 @@ const tripEventsPresenter = new TripEventsPresenter({
   offersModel,
   destinationsModel,
   filterModel,
-  onNewTaskDestroy: handleNewPointFormClose
+  onNewPointDestroy: handleNewPointFormClose
 });
 
 const filterPresenter = new FilterPresenter({

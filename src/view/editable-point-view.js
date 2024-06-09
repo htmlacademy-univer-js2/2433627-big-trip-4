@@ -258,7 +258,11 @@ export default class EditablePointView extends AbstractStatefulView {
 
   #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onDeleteButtonClick(EditablePointView.parseStateToPoint(this._state));
+    if (this.#isNew) {
+      this.#onDeleteButtonClick();
+    } else {
+      this.#onDeleteButtonClick(EditablePointView.parseStateToPoint(this._state));
+    }
   };
 
   #submitFormHandler = (evt) => {
