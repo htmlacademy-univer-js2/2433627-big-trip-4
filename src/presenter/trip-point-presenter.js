@@ -5,7 +5,7 @@ import { isEscapeKey } from '../util.js';
 import { UserAction, UpdateType } from '../const.js';
 
 
-const VIEW = {
+const View = {
   DEFAULT: 'DEFAULT',
   EDIT: 'EDIT'
 };
@@ -25,7 +25,7 @@ export default class TripPointPresenter {
   #offer = null;
   #destination = null;
 
-  #view = VIEW.DEFAULT;
+  #view = View.DEFAULT;
 
   constructor(pointContainer, onViewChange, onDataChange, offersModel, destinationsModel) {
     this.#pointContainer = pointContainer;
@@ -71,7 +71,7 @@ export default class TripPointPresenter {
   }
 
   resetView() {
-    if (this.#view === VIEW.EDIT){
+    if (this.#view === View.EDIT){
       this.#editPointComponent.reset(this.#point, this.#destination, this.#offer);
       this.#replaceFormToPoint();
     }
@@ -83,7 +83,7 @@ export default class TripPointPresenter {
   }
 
   setSaving() {
-    if (this.#view === VIEW.EDIT) {
+    if (this.#view === View.EDIT) {
       this.#editPointComponent.updateElement({
         isDisabled: true,
         isSaving: true,
@@ -92,7 +92,7 @@ export default class TripPointPresenter {
   }
 
   setDeleting() {
-    if (this.#view === VIEW.EDIT) {
+    if (this.#view === View.EDIT) {
       this.#editPointComponent.updateElement({
         isDisabled: true,
         isDeleting: true,
@@ -101,7 +101,7 @@ export default class TripPointPresenter {
   }
 
   setAborting() {
-    if (this.#view === VIEW.DEFAULT) {
+    if (this.#view === View.DEFAULT) {
       this.#pointComponent.shake();
       return;
     }
@@ -120,12 +120,12 @@ export default class TripPointPresenter {
   #replacePointToForm() {
     this.#onViewChange();
     replace(this.#editPointComponent, this.#pointComponent);
-    this.#view = VIEW.EDIT;
+    this.#view = View.EDIT;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#editPointComponent);
-    this.#view = VIEW.DEFAULT;
+    this.#view = View.DEFAULT;
   }
 
   #pointRollupButtonClikHandler = () => {
