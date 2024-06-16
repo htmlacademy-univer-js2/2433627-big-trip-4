@@ -49,6 +49,18 @@ const newPointButtonComponent = new NewPointButtonView({
   onClick: handleNewPointButtonClick
 });
 
+async function initPointsData() {
+  await Promise.all([
+    destinationsModel.init(),
+    offersModel.init(),
+  ]);
+}
+
+async function initModels() {
+  await initPointsData();
+  pointsModel.init();
+}
+
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
@@ -60,8 +72,6 @@ function handleNewPointButtonClick() {
 
 render(newPointButtonComponent, mainContainer);
 
-destinationsModel.init();
-offersModel.init();
-pointsModel.init();
+initModels();
 filterPresenter.init();
 tripEventsPresenter.init();
